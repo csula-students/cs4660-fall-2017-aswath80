@@ -24,4 +24,4 @@ def get_avg(li):
     sum = 0
     for n in li:
         sum = sum + n
-    return sum//len(li)
+    return sum/len(li)
