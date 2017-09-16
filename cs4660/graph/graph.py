@@ -37,9 +37,11 @@ def construct_graph_from_file(graph, file_path):
     3. return the graph
     """
     f = open(file_path, "r", encoding="utf-8")
-    lineCount = int(f.readline().strip())
-    for i in range(0, lineCount):
-        graph.add_edge(parse_line_to_edge(graph, f.readline()))
+    # graphs are dynamically maintained not necessarily based on the nodeCount.
+    # nodeCount = int(f.readline().strip())
+    for line in f:
+        if(line.strip() != '' and ':' in line):
+            graph.add_edge(parse_line_to_edge(graph, line))
     f.close()
     return graph
 
