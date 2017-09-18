@@ -164,7 +164,7 @@ class AdjacencyMatrix(object):
         if self.__contains_node(node_1) and self.__contains_node(node_2):
             node_1_index = self.__get_node_index(node_1)
             node_2_index = self.__get_node_index(node_2)
-            return self.adjacency_matrix[node_1_index][node_2_index] == 1
+            return self.adjacency_matrix[node_1_index][node_2_index] > 0
         return False
 
     def neighbors(self, node):
@@ -173,7 +173,7 @@ class AdjacencyMatrix(object):
         if self.__contains_node(node):
             node_index = self.__get_node_index(node)
             for col in range(0, len(self.adjacency_matrix[node_index])):
-                if self.adjacency_matrix[node_index][col] == 1:
+                if self.adjacency_matrix[node_index][col] > 0:
                     neighbors_.append(self.nodes[col])
         return sorted(neighbors_, key=lambda n: n.data)
 
@@ -219,7 +219,7 @@ class AdjacencyMatrix(object):
         from_node_index = self.__get_node_index(edge.from_node)
         to_node_index = self.__get_node_index(edge.to_node)
         if self.adjacency_matrix[from_node_index][to_node_index] == 0:
-            self.adjacency_matrix[from_node_index][to_node_index] = 1
+            self.adjacency_matrix[from_node_index][to_node_index] = edge.weight
             return True
         return False
 
@@ -230,7 +230,7 @@ class AdjacencyMatrix(object):
             self.add_node(edge.to_node)
         from_node_index = self.__get_node_index(edge.from_node)
         to_node_index = self.__get_node_index(edge.to_node)
-        if self.adjacency_matrix[from_node_index][to_node_index] == 1:
+        if self.adjacency_matrix[from_node_index][to_node_index] > 0:
             self.adjacency_matrix[from_node_index][to_node_index] = 0
             return True
         return False
