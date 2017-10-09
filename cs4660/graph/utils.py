@@ -4,6 +4,7 @@ utils package is for some quick utility methods
 such as parsing
 """
 from io import open
+from graph import graph as g
 
 class Tile(object):
     """Node represents basic unit of graph"""
@@ -51,7 +52,6 @@ def parse_grid_file(graph, file_path):
     return graph
 
 def build_graph_from_grid_lines(graph, line_list):
-    import graph.graph as g
 
     node_grid = []
     row_count = len(line_list)
@@ -105,27 +105,3 @@ def convert_edge_to_grid_actions(edges):
             path_string = path_string + direction_dict[(tile1.x-tile2.x,tile1.y-tile2.y)]
 
     return path_string
-
-def get_path_to_destination_node(graph, node_to_parent_dict, dest_node):
-    """
-    Returns the path to the from the root node to the dest_node using 
-    the node->parent dictionary provided. The dictionary is created 
-    as a by-product of any graph search algorithm
-    """
-    import graph.graph as g
-
-    path = []
-
-    if dest_node in node_to_parent_dict:
-        # Start with the destination node to compute the path upward
-        parent_node = node_to_parent_dict[dest_node]
-        while parent_node is not None:
-            # Add the edge to the top of list since we move bottom up
-            path.insert(0, g.Edge(parent_node, dest_node, graph.distance(parent_node, dest_node)))
-            dest_node = parent_node
-            if dest_node in node_to_parent_dict:
-                parent_node = node_to_parent_dict[dest_node]
-            else:
-                parent_node = None
-
-    return path
