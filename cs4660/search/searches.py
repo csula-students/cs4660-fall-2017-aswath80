@@ -3,6 +3,7 @@ Searches module defines all different search algorithms
 """
 from graph import utils
 from graph import stack
+from graph import graph as g
 import heapq
 
 '''
@@ -89,7 +90,7 @@ def bfs(graph, initial_node, dest_node):
             if to_node not in visited_node_set:
                 queue_list.append(to_node)
 
-    return utils.get_path_to_destination_node(graph, node_to_parent_dict, dest_node)
+    return get_path_to_destination_node(graph, node_to_parent_dict, dest_node)
     
 def dfs(graph, initial_node, dest_node):
     """
@@ -125,7 +126,7 @@ def dfs(graph, initial_node, dest_node):
                 node_to_parent_dict[to_node] = from_node
                 node_stack.push(to_node)
 
-    return utils.get_path_to_destination_node(graph, node_to_parent_dict, dest_node)
+    return get_path_to_destination_node(graph, node_to_parent_dict, dest_node)
 
 def dijkstra_search(graph, initial_node, dest_node):
     """
@@ -163,7 +164,7 @@ def dijkstra_search(graph, initial_node, dest_node):
                 # Update new parent that gives new lower cost
                 node_to_parent_dict[to_node] = from_node
 
-    return utils.get_path_to_destination_node(graph, node_to_parent_dict, dest_node)
+    return get_path_to_destination_node(graph, node_to_parent_dict, dest_node)
 
 def a_star_search(graph, initial_node, dest_node):
     """
@@ -203,10 +204,32 @@ def a_star_search(graph, initial_node, dest_node):
                 # Update new parent that gives new lower cost
                 node_to_parent_dict[to_node] = from_node
 
-    return utils.get_path_to_destination_node(graph, node_to_parent_dict, dest_node)
+    return get_path_to_destination_node(graph, node_to_parent_dict, dest_node)
 
 def heuristic_dist(tile1, tile2):    
     scale = 1
     dx = abs(tile1.x - tile2.x)
     dy = abs(tile1.y - tile2.y)
     return scale * (dx + dy)
+
+def get_path_to_destination_node(graph, node_to_parent_dict, dest_node):
+    """
+    Returns the path to the from the root node to the dest_node using 
+    the node->parent dictionary provided. The dictionary is created 
+    as a by-product of any graph search algorithm
+    """
+    path = []
+
+    if dest_node in node_to_parent_dict:
+        # Start with the destination node to compute the path upward
+        parent_node = node_to_parent_dict[dest_node]
+        while parent_node is not None:
+            # Add the edge to the top of list since we move bottom up
+            path.insert(0, g.Edge(parent_node, dest_node, graph.distance(parent_node, dest_node)))
+            dest_node = parent_node
+            if dest_node in node_to_parent_dict:
+                parent_node = node_to_parent_dict[dest_node]
+            else:
+                parent_node = None
+
+    return path
