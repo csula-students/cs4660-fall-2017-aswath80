@@ -1,10 +1,9 @@
 """
 Searches module defines all different search algorithms
 """
-from queue import Queue
-from queue import PriorityQueue
 from graph import utils
 from graph import stack
+import heapq
 
 '''
 class HeaNode that represents a graph node with a priority
@@ -65,16 +64,16 @@ def bfs(graph, initial_node, dest_node):
     uses graph to do search from the initial_node to dest_node
     returns a list of actions going from the initial node to dest_node
     """
+    queue_list = []
     node_to_parent_dict = {}
     # Set to keep track of visited nodes 
     visited_node_set = set()
 
     # Intialize queue with initial_node to start the BFS
-    node_queue = Queue()
-    node_queue.put(initial_node)
+    queue_list.append(initial_node)
 
-    while not node_queue.empty():
-        from_node = node_queue.get()
+    while queue_list:
+        from_node = queue_list.pop(0)
 
         if from_node == dest_node:
             break
@@ -88,7 +87,7 @@ def bfs(graph, initial_node, dest_node):
                 node_to_parent_dict[to_node] = from_node
             # Keep track of visited nodes to avoid cycles in a cyclic graph
             if to_node not in visited_node_set:
-                node_queue.put(to_node)
+                queue_list.append(to_node)
 
     return utils.get_path_to_destination_node(graph, node_to_parent_dict, dest_node)
     
@@ -134,17 +133,17 @@ def dijkstra_search(graph, initial_node, dest_node):
     uses graph to do search from the initial_node to dest_node
     returns a list of actions going from the initial node to dest_node
     """
-    priority_queue = PriorityQueue()
+    priority_queue = []
     node_to_parent_dict = {}
     node_cost = {}
 
     # Initialize the priority queue with initial code and initial cost, parent
-    priority_queue.put(HeapNode(0, initial_node))
+    heapq.heappush(priority_queue, HeapNode(0, initial_node))
     node_to_parent_dict[initial_node] = None
     node_cost[initial_node] = 0
 
-    while not priority_queue.empty():
-        from_heap_node = priority_queue.get()
+    while priority_queue:
+        from_heap_node = heapq.heappop(priority_queue)
         from_node = from_heap_node.node
 
         # Exit if destination found
@@ -160,7 +159,7 @@ def dijkstra_search(graph, initial_node, dest_node):
             if to_node not in node_cost or dist < node_cost[to_node]:
                 node_cost[to_node] = dist
                 priority = dist
-                priority_queue.put(HeapNode(priority, to_node))
+                heapq.heappush(priority_queue, HeapNode(priority, to_node))
                 # Update new parent that gives new lower cost
                 node_to_parent_dict[to_node] = from_node
 
@@ -172,17 +171,17 @@ def a_star_search(graph, initial_node, dest_node):
     uses graph to do search from the initial_node to dest_node
     returns a list of actions going from the initial node to dest_node
     """
-    priority_queue = PriorityQueue()
+    priority_queue = []
     node_to_parent_dict = {}
     node_cost = {}
 
     # Initialize the priority queue with initial code and initial cost, parent
-    priority_queue.put(HeapNode(0, initial_node))
+    heapq.heappush(priority_queue, HeapNode(0, initial_node))
     node_to_parent_dict[initial_node] = None
     node_cost[initial_node] = 0
 
-    while not priority_queue.empty():
-        from_heap_node = priority_queue.get()
+    while priority_queue:
+        from_heap_node = heapq.heappop(priority_queue)
         from_node = from_heap_node.node
 
         # Exit if destination found
@@ -200,7 +199,7 @@ def a_star_search(graph, initial_node, dest_node):
                 # Adding heuristic cost is an additional step compared to
                 # Dijkstra algorithm
                 priority = dist + heuristic_dist(to_node.data, dest_node.data)
-                priority_queue.put(HeapNode(priority, to_node))
+                heapq.heappush(priority_queue, HeapNode(priority, to_node))
                 # Update new parent that gives new lower cost
                 node_to_parent_dict[to_node] = from_node
 
