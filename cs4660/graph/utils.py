@@ -3,7 +3,6 @@ utils package is for some quick utility methods
 
 such as parsing
 """
-import graph as g
 
 class Tile(object):
     """Node represents basic unit of graph"""
@@ -51,6 +50,8 @@ def parse_grid_file(graph, file_path):
     return graph
 
 def build_graph_from_grid_lines(graph, line_list):
+    import graph as g
+
     node_grid = []
     row_count = len(line_list)
     if row_count > 0:
@@ -110,6 +111,8 @@ def get_path_to_destination_node(graph, node_to_parent_dict, dest_node):
     the node->parent dictionary provided. The dictionary is created 
     as a by-product of any graph search algorithm
     """
+    import graph as g
+
     path = []
 
     if dest_node in node_to_parent_dict:
