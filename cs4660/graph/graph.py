@@ -24,6 +24,8 @@ A Graph has following methods:
 from io import open
 from operator import itemgetter
 
+positive_infinity = float('inf')
+
 def construct_graph_from_file(graph, file_path):
     """
     TODO: read content from file_path, then add nodes and edges to graph object
@@ -151,6 +153,12 @@ class AdjacencyList(object):
                 return True
         return False
 
+    def distance(self, from_node, to_node):
+        if from_node in self.adjacency_list:
+            for edge in (edge for edge in self.adjacency_list[from_node] if edge.to_node.__eq__(to_node)):
+                return edge.weight
+        return positive_infinity        
+
 class AdjacencyMatrix(object):
     def __init__(self):
         # adjacency_matrix should be a two dimensions array of numbers that
@@ -244,6 +252,13 @@ class AdjacencyMatrix(object):
     def __contains_node(self, node):
         return node in self.nodes
 
+    def distance(self, from_node, to_node):
+        if self.__contains_node(from_node):
+            from_node_index = self.__get_node_index(from_node)
+            to_node_index = self.__get_node_index(to_node)
+            return self.adjacency_matrix[from_node_index][to_node_index]
+        return positive_infinity 
+
 class ObjectOriented(object):
     """ObjectOriented defines the edges and nodes as both list"""
     def __init__(self):
@@ -297,3 +312,8 @@ class ObjectOriented(object):
             return True
         return False
 
+    def distance(self, from_node, to_node):
+        for edge in (e for e in self.edges if e.from_node.__eq__(from_node) 
+        and e.to_node.__eq__(to_node)):
+            return edge.weight
+        return positive_infinity
