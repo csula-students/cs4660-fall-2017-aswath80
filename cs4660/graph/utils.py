@@ -4,7 +4,8 @@ utils package is for some quick utility methods
 such as parsing
 """
 from io import open
-from graph import graph as g
+from .graph import Node
+from .graph import Edge
 
 class Tile(object):
     """Node represents basic unit of graph"""
@@ -65,7 +66,7 @@ def build_graph_from_grid_lines(graph, line_list):
                     x = int((j - 1)/2)
                     tile_symbol = line_list[i][j] + line_list[i][j+1];
                     if not tile_symbol.__eq__("##"):
-                        node_grid[y].append(g.Node(Tile(x, y, str(tile_symbol))))
+                        node_grid[y].append(Node(Tile(x, y, str(tile_symbol))))
                     else:
                         node_grid[y].append(None)
 
@@ -74,11 +75,11 @@ def build_graph_from_grid_lines(graph, line_list):
                 if node_grid[x][y] is not None:
                     graph.add_node(node_grid[x][y])
                     if x > 0 and node_grid[x-1][y] is not None:
-                        graph.add_edge(g.Edge(node_grid[x-1][y], node_grid[x][y], 1))
-                        graph.add_edge(g.Edge(node_grid[x][y], node_grid[x-1][y], 1))
+                        graph.add_edge(Edge(node_grid[x-1][y], node_grid[x][y], 1))
+                        graph.add_edge(Edge(node_grid[x][y], node_grid[x-1][y], 1))
                     if y > 0 and node_grid[x][y-1] is not None:
-                        graph.add_edge(g.Edge(node_grid[x][y-1], node_grid[x][y], 1))
-                        graph.add_edge(g.Edge(node_grid[x][y], node_grid[x][y-1], 1))
+                        graph.add_edge(Edge(node_grid[x][y-1], node_grid[x][y], 1))
+                        graph.add_edge(Edge(node_grid[x][y], node_grid[x][y-1], 1))
 
     return
 
