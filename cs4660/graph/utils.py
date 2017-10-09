@@ -4,7 +4,7 @@ utils package is for some quick utility methods
 such as parsing
 """
 
-import graph.graph as g
+from graph import graph as g
 
 class Tile(object):
     """Node represents basic unit of graph"""
