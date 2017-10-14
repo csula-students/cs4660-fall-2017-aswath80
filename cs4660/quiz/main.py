@@ -25,6 +25,27 @@ STATE_TRANSITION_URL = "http://192.241.218.106:9000/state"
 
 positive_infinity = float('inf')
 
+class Node(object):
+    """Node represents basic unit of graph"""
+    def __init__(self, data, desc):
+        self.data = data
+        self.desc = desc
+
+    def __str__(self):
+        return '{}({})'.format(self.desc, self.data)
+
+    def __repr__(self):
+        return '{}({})'.format(self.desc, self.data)
+
+    def __eq__(self, other_node):
+        return self.data == other_node.data
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash(self.data)
+
 '''
 class HeaNode that represents a graph node with a priority
 '''
@@ -98,17 +119,21 @@ def bfs(initial_node, dest_node):
             break
 
         visited_node_set.add(from_node)
-        for to_node_state in get_state(from_node)["neighbors"]:
+
+        from_node_state = get_state(from_node)
+        neighbors = from_node_state["neighbors"]
+
+        for to_node_state in neighbors:
             to_node = to_node_state["id"]
-            # If the node was already in parent dictionary, it means that the 
-            # node was already visited from a different parent.
-            # We will retain the same order in which nodes are visited in BFS
-            if to_node not in node_to_parent_dict:
-                node_to_parent_dict[to_node] = from_node
             # Keep track of visited nodes to avoid cycles in a cyclic graph
             if to_node not in visited_node_set:                
                 queue_list.append(to_node)
                 visited_node_set.add(to_node)
+                # If the node was already in parent dictionary, it means that the 
+                # node was already visited from a different parent.
+                # We will retain the same order in which nodes are visited in BFS
+                if to_node not in node_to_parent_dict:
+                    node_to_parent_dict[Node(to_node, to_node_state["location"]["name"])] = Node(from_node, from_node_state["location"]["name"])                
 
     return get_path_to_destination_node(node_to_parent_dict, dest_node, initial_node)
 
@@ -138,28 +163,32 @@ def dijkstra_search(initial_node, dest_node):
         
         visited_node_set.add(from_node)
 
-        for to_node_state in get_state(from_node)["neighbors"]:
+        from_node_state = get_state(from_node)
+        neighbors = from_node_state["neighbors"]
+
+        #print(from_node + " has " + str(len(neighbors)) + " neighbors")
+
+        for to_node_state in neighbors:
             to_node = to_node_state["id"]
-            # to_node cost = from_node cost + edge distance between
-            # from_node -> to_node
-            dist = node_cost[from_node] + distance(from_node, to_node)
             # Update to_node only if it was not visited before or if it has
-            # new lower cost compared to previous cost
+            # new higher cost compared to previous cost
             if to_node not in visited_node_set:
-                visited_node_set.add(to_node)
+                # to_node cost = from_node cost + edge distance between
+                # from_node -> to_node
+                dist = node_cost[from_node] + distance(from_node, to_node)
                 if to_node not in node_cost or dist > node_cost[to_node]:
                     node_cost[to_node] = dist
                     priority = -dist
                     heapq.heappush(priority_queue, HeapNode(priority, to_node))
                     # Update new parent that gives new lower cost
-                    node_to_parent_dict[to_node] = from_node
+                    node_to_parent_dict[Node(to_node, to_node_state["location"]["name"])] = Node(from_node, from_node_state["location"]["name"])
 
     return get_path_to_destination_node(node_to_parent_dict, dest_node, initial_node)
 
-def distance(from_node, to_node):
+def distance(from_node, to_node):    
     return transition_state(from_node, to_node)["event"]["effect"]
 
-def get_path_to_destination_node(node_to_parent_dict, dest_node, initial_node):
+def get_path_to_destination_node(node_to_parent_dict, dest_node_data, initial_node_data):
     """
     Returns the path to the from the root node to the dest_node using 
     the node->parent dictionary provided. The dictionary is created 
@@ -168,16 +197,19 @@ def get_path_to_destination_node(node_to_parent_dict, dest_node, initial_node):
     visited_node_set = set()
     path = []
 
-    visited_node_set.add(dest_node)
+    visited_node_set.add(dest_node_data)
+
+    dest_node_state = get_state(dest_node_data)
+    dest_node = Node(dest_node_state["id"], dest_node_state["location"]["name"])
 
     if dest_node in node_to_parent_dict:
         # Start with the destination node to compute the path upward
         parent_node = node_to_parent_dict[dest_node]
-        while parent_node is not None and parent_node not in visited_node_set:
+        while parent_node is not None and parent_node.data not in visited_node_set:
             # Add the edge to the top of list since we move bottom up
-            visited_node_set.add(parent_node)
-            path.insert(0, parent_node + ":" + dest_node + ":" + str(distance(parent_node, dest_node)))
-            if parent_node == initial_node:
+            visited_node_set.add(parent_node.data)
+            path.insert(0, parent_node.__str__() + ":" + dest_node.__str__() + ":" + str(distance(parent_node.data, dest_node.data)))
+            if parent_node.data == initial_node_data:
                 break
             #path.insert(0, parent_node + ":" + dest_node)
             dest_node = parent_node
