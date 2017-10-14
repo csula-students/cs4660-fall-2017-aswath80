@@ -140,7 +140,6 @@ def dijkstra_search(initial_node, dest_node):
 
         for to_node_state in get_state(from_node)["neighbors"]:
             to_node = to_node_state["id"]
-            print("to node = "+to_node)
             # to_node cost = from_node cost + edge distance between
             # from_node -> to_node
             dist = node_cost[from_node] + distance(from_node, to_node)
@@ -185,6 +184,9 @@ def get_path_to_destination_node(node_to_parent_dict, dest_node):
             else:
                 parent_node = None
 
+    for p in path:
+        print(p)
+
     return path
 
 def get_state(room_id):
@@ -222,5 +224,7 @@ if __name__ == "__main__":
     start_id = '7f3dc077574c013d98b2de8f735058b4'
     end_id = 'f1f131f647621a4be7c71292e79613f9'
 
-    #print(bfs(start_id, end_id))
-    print(dijkstra_search(start_id, end_id))
+    print("bfs")
+    bfs(start_id, end_id)
+    print("dijkstra")
+    dijkstra_search(start_id, end_id)
