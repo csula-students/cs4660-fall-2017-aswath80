@@ -110,7 +110,7 @@ def bfs(initial_node, dest_node):
                 queue_list.append(to_node)
                 visited_node_set.add(to_node)
 
-    return get_path_to_destination_node(node_to_parent_dict, dest_node)
+    return get_path_to_destination_node(node_to_parent_dict, dest_node, initial_node)
 
 def dijkstra_search(initial_node, dest_node):
     """
@@ -154,12 +154,12 @@ def dijkstra_search(initial_node, dest_node):
                     # Update new parent that gives new lower cost
                     node_to_parent_dict[to_node] = from_node
 
-    return get_path_to_destination_node(node_to_parent_dict, dest_node)
+    return get_path_to_destination_node(node_to_parent_dict, dest_node, initial_node)
 
 def distance(from_node, to_node):
     return transition_state(from_node, to_node)["event"]["effect"]
 
-def get_path_to_destination_node(node_to_parent_dict, dest_node):
+def get_path_to_destination_node(node_to_parent_dict, dest_node, initial_node):
     """
     Returns the path to the from the root node to the dest_node using 
     the node->parent dictionary provided. The dictionary is created 
@@ -177,6 +177,8 @@ def get_path_to_destination_node(node_to_parent_dict, dest_node):
             # Add the edge to the top of list since we move bottom up
             visited_node_set.add(parent_node)
             path.insert(0, parent_node + ":" + dest_node + ":" + str(distance(parent_node, dest_node)))
+            if parent_node == initial_node:
+                break
             #path.insert(0, parent_node + ":" + dest_node)
             dest_node = parent_node
             if dest_node in node_to_parent_dict:
